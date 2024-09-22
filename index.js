@@ -6,7 +6,12 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
+const corsOptions = {
+  origin: ["http://localhost:5000", "http://localhost:5173"],
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nrlryfn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -27,10 +32,19 @@ async function run() {
 
     const myQueriesCollections = client.db("queryHub").collection("myQueries");
 
+    // Get All Queries Posted
     app.get("/myQueries", async (req, res) => {
       const result = await myQueriesCollections.find().toArray();
       res.send(result);
     });
+
+    // Post A Query In DB
+    app.post("/myQueries", async (req, res) => {
+      const newData = req.body;
+      const result = await myQueriesCollections.insertOne(newData);
+      res.send(result);
+    });
+
 
     
 
