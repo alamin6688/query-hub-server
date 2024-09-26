@@ -31,6 +31,9 @@ async function run() {
     // await client.connect();
 
     const myQueriesCollections = client.db("queryHub").collection("myQueries");
+    const recommendationCollections = client
+      .db("queryHub")
+      .collection("recommendations");
 
     // Get All Queries
     app.get("/myQueries", async (req, res) => {
@@ -46,12 +49,21 @@ async function run() {
       res.send(result);
     });
 
-    // Post A Query In DB
+    // Post A Query Data In DB
     app.post("/myQueries", async (req, res) => {
       const newData = req.body;
       const result = await myQueriesCollections.insertOne(newData);
       res.send(result);
     });
+
+    // Post A Recommendation Data In DB
+    app.post("/recommendation", async (req, res) => {
+      const newData = req.body;
+      const result = await recommendationCollections.insertOne(newData);
+      res.send(result);
+    });
+
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
