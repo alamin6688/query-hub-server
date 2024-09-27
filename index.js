@@ -56,14 +56,18 @@ async function run() {
       res.send(result);
     });
 
+    // Get All Recommendations
+    app.get("/recommendations", async (req, res) => {
+      const result = await recommendationCollections.find().toArray();
+      res.send(result);
+    });
+
     // Post A Recommendation Data In DB
-    app.post("/recommendation", async (req, res) => {
+    app.post("/recommendations", async (req, res) => {
       const newData = req.body;
       const result = await recommendationCollections.insertOne(newData);
       res.send(result);
     });
-
-    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
