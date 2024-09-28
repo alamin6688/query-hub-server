@@ -56,6 +56,14 @@ async function run() {
       res.send(result);
     });
 
+    // Delete A Query
+    app.delete("/myQueries/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await myQueriesCollections.deleteOne(query);
+      res.send(result);
+    });
+
     // Get All Recommendations
     app.get("/recommendations", async (req, res) => {
       const result = await recommendationCollections.find().toArray();
