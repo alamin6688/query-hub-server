@@ -56,6 +56,25 @@ async function run() {
       res.send(result);
     });
 
+    // Update A My Query Data In DB
+    app.put("/myQueries/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          ...updateData,
+        },
+      };
+      const result = await myQueriesCollections.updateOne(
+        query,
+        updatedDoc,
+        options
+      );
+      res.send(result);
+    });
+
     // Delete A Query
     app.delete("/myQueries/:id", async (req, res) => {
       const id = req.params.id;
