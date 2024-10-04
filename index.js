@@ -31,9 +31,24 @@ async function run() {
     // await client.connect();
 
     const myQueriesCollections = client.db("queryHub").collection("myQueries");
+    const blogPostsCollections = client.db("queryHub").collection("blogPosts");
     const recommendationCollections = client
       .db("queryHub")
       .collection("recommendations");
+
+    // Get All Blog Posts
+    app.get("/blogPosts", async (req, res) => {
+      const result = await blogPostsCollections.find().toArray();
+      res.send(result);
+    });
+
+    // Get A Specific Blog Post
+    app.get("/blogPosts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await blogPostsCollections.findOne(query);
+      res.send(result);
+    });
 
     // Get All Queries
     app.get("/myQueries", async (req, res) => {
