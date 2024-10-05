@@ -7,7 +7,12 @@ const port = process.env.PORT || 5000;
 
 // middleware
 const corsOptions = {
-  origin: ["http://localhost:5000", "http://localhost:5173"],
+  origin: [
+    "http://localhost:5000",
+    "http://localhost:5173",
+    "https://query-hub-d9dd2.web.app",
+    "https://query-hub-web.netlify.app",
+  ],
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -52,8 +57,37 @@ async function run() {
 
     // Get All Queries
     app.get("/myQueries", async (req, res) => {
-      const result = await myQueriesCollections.find().toArray();
-      res.send(result);
+      const { filter, sort, search } = req.query;
+
+      // Initialize query
+      let query = {};
+
+      // Search Filter
+      if (search) {
+        query.product_name = { $regex: search, $options: "i" };
+      }
+
+      // Filtering Sort
+      if (filter) {
+        query.product_brand = filter;
+      }
+
+      // Sort By Deadline
+      let options = {};
+      if (sort) {
+        options.sort = {
+          currentDate: sort === "asc" ? 1 : -1,
+        }; // 1 for ascending, -1 for descending
+      }
+      try {
+        const result = await myQueriesCollections
+          .find(query, options)
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Error fetching queries:", error);
+        res.status(500).send("Internal Server Error");
+      }
     });
 
     // Get A Specific Query
